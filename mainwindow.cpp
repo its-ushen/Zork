@@ -1,12 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "player.h"
+
+using namespace std;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    ,counter(0)
 {
     ui->setupUi(this);
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 MainWindow::~MainWindow()
@@ -14,9 +17,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_counterButton_clicked()
+void MainWindow::on_startGameButton_clicked()
 {
-    counter ++;
-    qDebug() << "Counter value:" << counter;
-    ui->distanceTravellledDisplay->setText(QString:: number(counter));
+    const QString username = ui->username->toPlainText();
+    Player player = Player();
+
+    qDebug()<<player.getName();
+
+    ui->stackedWidget->setCurrentIndex(1);
+
+}
+
+void MainWindow::submitAnswer()
+{
+    //
 }

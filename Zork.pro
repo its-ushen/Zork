@@ -9,11 +9,35 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    HelperUtils.cpp \
+    country.cpp \
+    functionalitem.cpp \
+    gameengine.cpp \
+    item.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    outfititem.cpp \
+    player.cpp \
+    specialitem.cpp \
+    travelmanager.cpp \
+    traveloption.cpp
 
 HEADERS += \
-    mainwindow.h
+    HelperUtils.h \
+    Leaderboard.h \
+    country.h \
+    functionalitem.h \
+    gameengine.h \
+    item.h \
+    mainwindow.h \
+    multiplechoicequestion.h \
+    outfititem.h \
+    player.h \
+    question.h \
+    specialitem.h \
+    travelmanager.h \
+    traveloption.h \
+    truefalsequestion.h
 
 FORMS += \
     mainwindow.ui
