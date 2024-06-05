@@ -6,42 +6,43 @@
 #include <random>
 
 namespace QuestionUtils {
-    std::vector<std::unique_ptr<Question>> createQuestionPool() {
-        std::vector<std::unique_ptr<Question>> pool;
+    std::vector<std::shared_ptr<Question>> createQuestionPool() {
+        std::vector<std::shared_ptr<Question>> pool;
 
         // Multiple Choice Questions
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("What does the delete keyword do in C++?", std::vector<QString>{"Deletes a variable from memory", "Frees dynamically allocated memory", "Removes a file from disk", "Exits the program"}, 1));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which of the following is a correct identifier in C++?", std::vector<QString>{"2names", "_name", "namespace", "new"}, 1));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which keyword is used to define a class in C++?", std::vector<QString>{"class", "struct", "interface", "package"}, 0));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which header file is required to use std::string?", std::vector<QString>{"<string.h>", "<cstring>", "<strings>", "<string>"}, 3));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which of the following is not a loop structure in C++?", std::vector<QString>{"for", "while", "do-while", "repeat-until"}, 3));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which header file is required to use the std::vector container?", std::vector<QString>{"<vector>", "<array>", "<list>", "<maps>"}, 0));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("What keyword is used to define a namespace?", std::vector<QString>{"package", "module", "namespace", "library"}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which of the following is true about constructors in C++?", std::vector<QString>{"Constructors can be virtual.", "Constructors are used to destroy an object.", "A class can have more than one constructor.", "Constructors must always be public."}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which of the following is a correct way to initialize an object?", std::vector<QString>{"ClassName obj = new ClassName();", "ClassName obj();", "ClassName obj = ClassName();", "ClassName obj->ClassName();"}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("What does the this pointer represent?", std::vector<QString>{"A pointer to the base class.", "A pointer to the current object.", "A pointer to the derived class.", "A pointer to a static member."}, 1));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which operator can NOT be overloaded in C++?", std::vector<QString>{"++", "--", "::", "!="}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which feature in C++ is used to manage memory automatically?", std::vector<QString>{"Destructor", "Inline functions", "Smart pointers", "Namespaces"}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("What is the purpose of the dynamic_cast operator?", std::vector<QString>{"For memory allocation.", "For handling exceptions.", "For type conversion between related classes.", "For increase performance."}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which STL container provides constant time insertion and deletion at any position?", std::vector<QString>{"std::vector", "std::deque", "std::list", "std::array"}, 2));
-        pool.push_back(std::make_unique<MultipleChoiceQuestion>("Which of the following correctly declares an abstract class?", std::vector<QString>{"Class with no member functions.", "Class with at least one pure virtual function.", "Class declared with the abstract keyword.", "Class that cannot be instantiated."}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("What does the delete keyword do in C++?", std::vector<QString>{"Deletes a variable from memory", "Frees dynamically allocated memory", "Removes a file from disk"}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which of the following is a correct identifier in C++?", std::vector<QString>{"2names", "_name", "new"}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which keyword is used to define a class in C++?", std::vector<QString>{"class", "struct", "interface"}, 0));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which header file is required to use std::string?", std::vector<QString>{"<string.h>", "<cstring>", "<string>"}, 2));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which of the following is not a loop structure in C++?", std::vector<QString>{"for", "while", "repeat-until"}, 2));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which header file is required to use the std::vector container?", std::vector<QString>{"<vector>", "<array>", "<list>"}, 0));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("What keyword is used to define a namespace?", std::vector<QString>{"package", "module", "namespace"}, 2));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which of the following is true about constructors in C++?", std::vector<QString>{"Constructors can be virtual.", "A class can have more than one constructor.", "Constructors must always be public."}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which of the following is a correct way to initialize an object?", std::vector<QString>{"ClassName obj();", "ClassName obj = ClassName();", "ClassName obj->ClassName();"}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("What does the this pointer represent?", std::vector<QString>{"A pointer to the base class.", "A pointer to the current object.", "A pointer to a static member."}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which operator can NOT be overloaded in C++?", std::vector<QString>{"++", "--", "::"}, 2));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which feature in C++ is used to manage memory automatically?", std::vector<QString>{"Destructor", "Inline functions", "Smart pointers"}, 2));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("What is the purpose of the dynamic_cast operator?", std::vector<QString>{"For handling exceptions.", "For type conversion between related classes.", "For increase performance."}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which STL container provides constant time insertion and deletion at any position?", std::vector<QString>{"std::deque", "std::list", "std::array"}, 1));
+        pool.push_back(std::make_shared<MultipleChoiceQuestion>("Which of the following correctly declares an abstract class?", std::vector<QString>{"Class with no member functions.", "Class with at least one pure virtual function.", "Class that cannot be instantiated."}, 1));
 
-        pool.push_back(std::make_unique<TrueFalseQuestion>("In C++, the default access modifier for members of a class is private.", true));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("In C++, distributed inheritance is a type of inheritance.", false));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("The delete operator in C++ is used to remove files from the disk.", false));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("In C++, it is possible to overload the && and || operators.", false));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("In C++, a template function can operate with any data type.", true));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("Function overloading in C++ allows the same function name to have different parameters.", true));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("The std::make_unique function in C++ is used to ensure data uniqueness in vectors.", false));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("Function templates in C++ are the same as virtual functions.", false));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("In C++, member variables of a struct are private by default.", false));
-        pool.push_back(std::make_unique<TrueFalseQuestion>("In C++, a destructor is used to release memory allocated to a variable.", false));
+
+        pool.push_back(std::make_shared<TrueFalseQuestion>("In C++, the default access modifier for members of a class is private.", true));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("In C++, distributed inheritance is a type of inheritance.", false));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("The delete operator in C++ is used to remove files from the disk.", false));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("In C++, it is possible to overload the && and || operators.", false));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("In C++, a template function can operate with any data type.", true));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("Function overloading in C++ allows the same function name to have different parameters.", true));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("The std::make_unique function in C++ is used to ensure data uniqueness in vectors.", false));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("Function templates in C++ are the same as virtual functions.", false));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("In C++, member variables of a struct are private by default.", false));
+        pool.push_back(std::make_shared<TrueFalseQuestion>("In C++, a destructor is used to release memory allocated to a variable.", false));
 
         return pool;
     }
 
-    std::vector<std::unique_ptr<Question>> getRandomQuestions(std::vector<std::unique_ptr<Question>>& pool, size_t count) {
-        std::vector<std::unique_ptr<Question>> selected;
+    std::vector<std::shared_ptr<Question>> getRandomQuestions(std::vector<std::shared_ptr<Question>>& pool, size_t count) {
+        std::vector<std::shared_ptr<Question>> selected;
         std::vector<size_t> indices(pool.size());
         std::iota(indices.begin(), indices.end(), 0);
 

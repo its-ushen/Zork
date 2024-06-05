@@ -27,6 +27,7 @@ public:
     int getScore() const;
     void incrementQuestionCounter();
     int getQuestionCount() const;
+    QString getInventory()const;
 
 private:
     QString name;
@@ -42,10 +43,6 @@ private:
     // to decide
     void setCoins(int coins);
 
-    // adding friendship
-    friend class GameEngine;
-
-    void printInventory();
 };
 
 #endif // PLAYER_H

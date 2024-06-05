@@ -8,8 +8,8 @@
 
 
 namespace QuestionUtils {
-    std::vector<std::unique_ptr<Question>> createQuestionPool();
-    std::vector<std::unique_ptr<Question>> getRandomQuestions (std::vector<std::unique_ptr<Question>>& pool, size_t count);
+    std::vector<std::shared_ptr<Question>> createQuestionPool();
+    std::vector<std::shared_ptr<Question>> getRandomQuestions (std::vector<std::shared_ptr<Question>>& pool, size_t count);
 }
 
 namespace CountryUtils {

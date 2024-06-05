@@ -23,8 +23,10 @@ SOURCES += \
     traveloption.cpp
 
 HEADERS += \
+    GameState.h \
     HelperUtils.h \
     Leaderboard.h \
+    MyException.h \
     country.h \
     functionalitem.h \
     gameengine.h \

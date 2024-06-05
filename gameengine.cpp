@@ -4,10 +4,20 @@
 #include <QFile>
 #define questionValue (50)
 
+GameEngine::GameEngine() {
+    // empty constructor
+}
+GameEngine::~GameEngine() {
+    // empty destructor
+}
 
 void GameEngine::startGame(const QString& username) {
+    gameState.isReady = 0;
+    gameState.isRunning = 1;
     currentPlayer.setName(username);
-    currentPlayer.resetStats();
+    qDebug() << "Player Name: " << currentPlayer.getName();
+    resetData();
+    day = 0;
 
     initialise();
     loadQuestionsForCountries();
@@ -15,6 +25,10 @@ void GameEngine::startGame(const QString& username) {
 }
 
 void GameEngine::endGame() {
+    gameState.isRunning = 0;
+    gameState.isEnding = 1;
+
+    qDebug() << "Player Name: " << currentPlayer.getName();
     float correctPercentage = currentPlayer.getScore() * 100.0 / currentPlayer.getQuestionCount();
     qDebug() << "Game Over!";
     qDebug() << "Percentage of Questions Correct: " << correctPercentage << "%";
@@ -23,46 +37,16 @@ void GameEngine::endGame() {
             highscore = day;
         }
         qDebug() << "Total Days Spent: " << day;
-        updateLeaderboards();
+
+        leaderboardDays.addEntry(currentPlayer.getName(), day);
+        leaderboardScore.addEntry(currentPlayer.getName(), correctPercentage);
     }
-
-    qDebug() << "Updated Leaderboards:";
-    qDebug() << "Days Leaderboard:";
-    leaderboardDays.display();
-    qDebug() << "Score Leaderboard:";
-    leaderboardScore.display();
-
-    saveLeaderboardData();
-    resetData();
 }
 
 void GameEngine::resetData() {
     currentPlayer.resetStats();
+    travelManager.resetTravelOptions();
 }
-
-void GameEngine::saveLeaderboardData() const {
-    QString filename = "leaderboardData.txt";
-    QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Failed to open file for writing:" << filename;
-        return;
-    }
-
-    QTextStream out(&file);
-    // Assuming leaderboardDays and leaderboardScore are your leaderboard objects
-    out << "Days Leaderboard:\n";
-    for (const auto& entry : leaderboardDays.getEntries()) {
-        out << entry.playerName << ", " << entry.score << "\n";
-    }
-    out << "Score Leaderboard:\n";
-    for (const auto& entry : leaderboardScore.getEntries()) {
-        out << entry.playerName << ", " << entry.score << "\n";
-    }
-
-    file.close();
-    qDebug() << "Leaderboard data saved successfully to" << filename;
-}
-
 
 void GameEngine::initialise() {
     CountryUtils::createCountries(travelManager);
@@ -72,39 +56,57 @@ void GameEngine::initialise() {
 
 void GameEngine::loadQuestionsForCountries() {
     auto countries = travelManager.getCountries();
-    auto questionPool = QuestionUtils::createQuestionPool();
+    auto shuffledQuestions  = QuestionUtils::createQuestionPool();
 
+    size_t questionIndex = 0;
     for (auto& country : countries) {
-        auto questions = QuestionUtils::getRandomQuestions(questionPool, 3);
-        for (auto& question : questions) {
-            country->addQuestion(std::move(question));
+        qDebug() << "Assigning questions to country: " << country->getName();
+        std::vector<std::shared_ptr<Question>> countryQuestions;
+
+        // Assign next set of questions uniquely
+        for (size_t i = 0; i < 3 && questionIndex < shuffledQuestions.size(); ++i, ++questionIndex) {
+            countryQuestions.push_back(shuffledQuestions[questionIndex]);
+        }
+
+        // Add questions to country
+        for (auto& question : countryQuestions) {
+            country->addQuestion(question);
         }
     }
 }
 
-void GameEngine::answerQuestion(int questionId, QString answer) {
+void GameEngine::answerQuestion(int questionId, const QString& answer) {
     const auto& questions = currentCountry->getQuestions();
-    auto& question = questions[questionId];
+    // Make sure the question ID is valid
+    if (questionId < 0 || static_cast<std::size_t>(questionId) >= questions.size()) {
+        qDebug() << "Invalid question ID";
+        return;
+    }
 
+    currentPlayer.incrementQuestionCounter();
+    auto& question = questions[questionId];
     if (question->checkAnswer(answer)) {
         awardCoins(questionValue);
+        currentPlayer.incrementScore();
+        qDebug() << "Answer Right: \n";
     }
 }
 
 void GameEngine::awardCoins(int baseCoins) {
     static int allowance = 3;
     int coinsToAward = baseCoins;
-    if (allowance > 0)
-    if (currentPlayer.hasBonus("x2 coin multiplier")) {
-        if (allowance > 0) {
-            coinsToAward *= 2;
-            allowance --;
-        }
-        else {
-            currentPlayer.removeBonus("x2 coin multiplier");
+
+    if (currentPlayer.hasBonus("x2 Coin Multiplier") && allowance > 0) {
+        coinsToAward *= 2;
+        allowance--;
+
+        // If allowance is depleted, remove the bonus
+        if (allowance == 0) {
+            currentPlayer.removeBonus("x2 Coin Multiplier");
         }
     }
     currentPlayer.earnCoins(coinsToAward);
+    qDebug() << "Coins awarded: " << coinsToAward;
 }
 
 void GameEngine::purchaseItem(int itemIndex) {
@@ -113,11 +115,13 @@ void GameEngine::purchaseItem(int itemIndex) {
         return; // Ensure itemIndex is within the range
     }
 
+    //implementing arrarys
     auto& item = items[itemIndex];
+    qDebug() << "Item Found, fine for now";
     if (currentPlayer.getCoins() >= item->getCost()) {
         currentPlayer.spendCoins(item->getCost());
         currentPlayer.addItem(item);
-        currentCountry->removeItem(itemIndex); // Ensure to remove the item from the country after transfer
+        // currentCountry->removeItem(itemIndex);
     }
 }
 
@@ -138,11 +142,11 @@ void GameEngine::selectTravelOption(const QString& destination, int cost) {
     applyTravelTimeBonus();
     auto option = travelManager.getTravelOption(currentCountry, destination, cost);
 
-    // checking for option
     if (option.has_value()) {
-        // apply cost related bonuses
+        // Apply cost-related bonuses
         if (currentPlayer.hasBonus("50% of next trip")) {
-            option->setCost(static_cast<int> (option->getCost() * 0.5));
+            int discountedCost = static_cast<int>(option->getCost() * 0.5);
+            option->setCost(discountedCost);
             currentPlayer.removeBonus("50% of next trip");
         }
 
@@ -150,20 +154,18 @@ void GameEngine::selectTravelOption(const QString& destination, int cost) {
             currentPlayer.spendCoins(option->getCost());
             travelToCountry(option);
         } else {
+            qDebug() << "Not enough coins";
             return;
         }
-    }
-
-    else {
+    } else {
         qDebug() << "No option found";
     }
-
 }
 
 void GameEngine::applyTravelTimeBonus() {
     auto& options = travelManager.getAvailableTravelOptions(*currentCountry);
     for (auto& option : options) {
-        if (currentPlayer.hasBonus("50% faster travel")) {
+        if (currentPlayer.hasBonus("Cut Travel Time in Half")) {
             option.setDuration(static_cast<int>(option.getDuration() * 0.5));
         }
     }
@@ -181,14 +183,13 @@ QString GameEngine::getCurrentCountry() const {
     }
 }
 
-
-
-void GameEngine::updateLeaderboards() {
-    // Update the days leaderboard
-    leaderboardDays.addEntry(currentPlayer.getName(), getCurrentDay());
-
-    // Update the score leaderboard
-    leaderboardScore.addEntry(currentPlayer.getName(), currentPlayer.getScore() / currentPlayer.getQuestionCount());
+bool GameEngine::isOver() const {
+    // Check if the current country is Ireland and days are >= 0
+    if (getCurrentCountry() == "Ireland" && getCurrentDay() > 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
@@ -198,9 +199,13 @@ void GameEngine::debugPrintPlayerInventory() {
 #endif
 }
 
+const std::vector<Leaderboard<int>::Entry>& GameEngine::getDayLeaderboardEntries() const {
+    return leaderboardDays.getEntries();
+}
 
-
-
+const std::vector<Leaderboard<float>::Entry>& GameEngine::getScoreLeaderboardEntries() const {
+    return leaderboardScore.getEntries();
+}
 
 
 

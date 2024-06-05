@@ -4,11 +4,13 @@
 #include <vector>
 #include <algorithm>
 #include <QString>
-#include <QDebug> // If you want to use qDebug()
+#include <QDebug>
 
 template<typename T>
 class Leaderboard {
 private:
+    friend class GameEngine;
+    friend class MainWindow;
     struct Entry {
         QString playerName;
         T score;
@@ -17,7 +19,7 @@ private:
 
         // Comparison operator for sorting
         bool operator<(const Entry& other) const {
-            return score > other.score; // Assuming you want a descending order
+            return score > other.score; // Descending Order
         }
     };
 

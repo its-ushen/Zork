@@ -12,6 +12,7 @@ public:
     std::optional<TravelOption> getTravelOption(Country* originName, const QString& destName, int cost) const;
     std::vector<Country*> getCountries() const;
     std::vector<TravelOption>& getAvailableTravelOptions(Country& country);
+    void resetTravelOptions();
 
 
 private:

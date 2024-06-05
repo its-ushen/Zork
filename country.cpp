@@ -1,4 +1,5 @@
 #include "country.h"
+#include <QDebug>
 
 Country::Country(const QString& name, int distanceToIreland)
     : name(name), distanceToIreland(distanceToIreland) {}
@@ -12,8 +13,13 @@ std::vector<TravelOption>& Country::getTravelOptions() {
     return travelOptions;
 }
 
-void Country::addQuestion(std::unique_ptr<Question> question) {
-    questions.push_back(std::move(question));
+void Country::addQuestion(std::shared_ptr<Question> question) {
+    if (question) {
+        qDebug() << "Adding question: " << question->getQuestionsText();
+        questions.push_back(std::move(question));
+    } else {
+        qDebug() << "Attempted to add a null question";
+    }
 }
 
 QString Country::getName() {
@@ -24,7 +30,7 @@ void Country::addItem(std::shared_ptr<Item> item) {
     items.push_back(std::move(item));
 }
 
-const std::vector<std::unique_ptr<Question>>& Country::getQuestions() const{
+const std::vector<std::shared_ptr<Question>>& Country::getQuestions() const{
     return questions;
 }
 
@@ -36,4 +42,8 @@ void Country::removeItem(int index) {
     if (index >= 0 && index < static_cast<int>(items.size())) {
         items.erase(items.begin() + index);
     }
+}
+
+void Country::resetTravelOptions() {
+    travelOptions.clear();  // This clears the vector of travel options
 }

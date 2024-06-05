@@ -46,3 +46,9 @@ std::optional<TravelOption> TravelManager::getTravelOption(Country* originName, 
 std::vector<TravelOption>& TravelManager::getAvailableTravelOptions(Country& country) {
     return country.getTravelOptions();
 }
+
+void TravelManager::resetTravelOptions() {
+    for (auto& country : countries) {
+        country->resetTravelOptions();
+    }
+}

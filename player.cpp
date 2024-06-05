@@ -1,6 +1,7 @@
 #include "player.h"
 #include "qdebug.h"
 #include <iostream>
+#include "MyException.h"
 
 Player::Player(): coins(0){}
 
@@ -36,6 +37,14 @@ int Player::getQuestionCount() const {
     return score;
 }
 
+QString Player::getInventory()const {
+    QString output = "";
+    for (std::shared_ptr<Item> item: inventory) {
+        output += item->getName() + "\n";
+    }
+    return output;
+}
+
 void Player::earnCoins(int amount)
 {
     if (amount > 0){
@@ -45,16 +54,16 @@ void Player::earnCoins(int amount)
 
 void Player::spendCoins(int amount)
 {
-    if (amount < getCoins()) {
+    if (amount <= getCoins()) {
         this->coins -= amount;
     } else {
-        std::cout<<"Not enough money";
+        throw MyException("Not enough Money");
     }
 }
 
 void Player::setCoins(int coins) {
     this->coins = coins;
-    this->coinsFloat = static_cast<float>(coins); // Convert int to float (potential loss of precision)
+    this->coinsFloat = static_cast<float>(coins);
 }
 
 bool Player::hasBonus(const QString& bonusType) const{
@@ -67,7 +76,7 @@ bool Player::hasBonus(const QString& bonusType) const{
 }
 
 void Player::addItem(std::shared_ptr<Item> item) {
-    inventory.push_back(item); // Correctly move the item into the player's inventory
+    inventory.push_back(item);
 }
 void Player::resetStats() {
     this->coins = 0;
@@ -77,7 +86,6 @@ void Player::resetStats() {
 }
 
 void Player::removeBonus(const QString& bonusType) {
-    // Directly remove the bonus without checking if the iterator has reached the end
     inventory.erase(std::remove_if(inventory.begin(), inventory.end(),
                                    [&bonusType](const std::shared_ptr<Item>& item) {
                                        auto functionalItem = std::dynamic_pointer_cast<FunctionalItem>(item);
@@ -85,12 +93,3 @@ void Player::removeBonus(const QString& bonusType) {
                                    }),
                     inventory.end());
 }
-
-void Player::printInventory() {
-    std::cout << "Inventory:" << std::endl;
-    for (const auto& item : inventory) {
-        qDebug() << "- " << item->getName();
-    }
-}
-
-
